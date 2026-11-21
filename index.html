@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#6757d9"><title>حسابینو | ماشین حساب</title>
+<style>
+:root{--bg:#f3f4ff;--card:#fff;--txt:#252544;--muted:#777895;--accent:#6757d9;--soft:#ece9ff}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#f0efff,#e9f6ff);font-family:Tahoma,Arial,sans-serif;color:var(--txt);padding:18px}
+.wrap{max-width:760px;margin:auto}.head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}.brand{font-size:25px;font-weight:900;color:var(--accent)}.sub{color:var(--muted);font-size:13px;margin-top:5px}
+button,input,select{font:inherit}button{cursor:pointer;border:0;border-radius:14px;padding:13px;background:var(--soft);color:var(--txt);font-weight:700}
+.card{background:var(--card);border-radius:22px;padding:18px;box-shadow:0 10px 35px #4b48a014;margin-bottom:15px}
+.display{background:#f8f7ff;border-radius:18px;padding:18px;text-align:left;direction:ltr;min-height:95px;overflow-wrap:anywhere}
+#expr{font-size:15px;color:var(--muted);min-height:22px}#out{font-size:34px;font-weight:800;margin-top:7px}
+.keys{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;margin-top:13px}.keys button{font-size:20px;min-height:54px}.keys .op{background:#e4e0ff;color:#5141c0}.keys .equal{background:var(--accent);color:white}.keys .danger{background:#ffe8ed;color:#c43a5b}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.tabs button.active{background:var(--accent);color:white}
+.panel{display:none}.panel.active{display:block}.fields{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.fields label{font-size:13px;color:var(--muted)}.fields input,.fields select{display:block;width:100%;padding:12px;border:1px solid #e4e2f2;border-radius:12px;margin-top:6px;background:white;color:#222}
+.result{background:#f4f1ff;border-radius:14px;padding:14px;margin-top:12px;font-weight:800}
+.history{font-size:14px;color:var(--muted);line-height:2;overflow-wrap:anywhere}
+@media(max-width:480px){body{padding:10px}.card{padding:13px}.keys{gap:7px}.keys button{min-height:49px;padding:10px}.fields{grid-template-columns:1fr}.brand{font-size:22px}}
+body.dark{--bg:#151528;--card:#222239;--txt:#f4f3ff;--muted:#b8b6d3;--soft:#333253;background:linear-gradient(135deg,#17172b,#20253b);color:var(--txt)}body.dark .display,body.dark .fields input,body.dark .fields select{background:#18182b;color:#fff;border-color:#393957}body.dark .result{background:#33304f}
+</style></head>
+<body><main class="wrap">
+<header class="head"><div><div class="brand">🧮 حسابینو</div><div class="sub">ماشین‌حساب هوشمند و کاربردی</div></div><button onclick="document.body.classList.toggle('dark')">🌙 تم</button></header>
+<section class="card"><div class="display"><div id="expr"></div><div id="out">0</div></div>
+<div class="keys">
+<button class="danger" onclick="clearAll()">AC</button><button onclick="del()">⌫</button><button class="op" onclick="add('%')">%</button><button class="op" onclick="add('/')">÷</button>
+<button onclick="add('7')">7</button><button onclick="add('8')">8</button><button onclick="add('9')">9</button><button class="op" onclick="add('*')">×</button>
+<button onclick="add('4')">4</button><button onclick="add('5')">5</button><button onclick="add('6')">6</button><button class="op" onclick="add('-')">−</button>
+<button onclick="add('1')">1</button><button onclick="add('2')">2</button><button onclick="add('3')">3</button><button class="op" onclick="add('+')">+</button>
+<button onclick="add('(')">(</button><button onclick="add('0')">0</button><button onclick="add('.')">.</button><button class="equal" onclick="calculate()">=</button>
+</div></section>
+<section class="card"><div class="tabs"><button class="active" onclick="tab('discount',this)">تخفیف</button><button onclick="tab('loan',this)">قسط</button><button onclick="tab('convert',this)">تبدیل واحد</button><button onclick="tab('history',this)">تاریخچه</button></div>
+<div id="discount" class="panel active"><div class="fields"><label>قیمت (تومان)<input id="price" type="number" placeholder="مثلاً 250000"></label><label>درصد تخفیف<input id="percent" type="number" placeholder="مثلاً 20"></label></div><div class="result" id="discountResult">قیمت نهایی نمایش داده می‌شود</div><button style="margin-top:10px" onclick="discount()">محاسبه تخفیف</button></div>
+<div id="loan" class="panel"><div class="fields"><label>مبلغ وام (تومان)<input id="loanAmount" type="number"></label><label>تعداد ماه<input id="months" type="number"></label><label>سود سالانه (%)<input id="rate" type="number" value="0"></label></div><div class="result" id="loanResult">قسط ماهانه</div><button style="margin-top:10px" onclick="loan()">محاسبه قسط</button></div>
+<div id="convert" class="panel"><div class="fields"><label>مقدار<input id="unitValue" type="number" value="1"></label><label>تبدیل<select id="unit"><option value="km">کیلومتر به متر</option><option value="m">متر به سانتی‌متر</option><option value="kg">کیلوگرم به گرم</option><option value="l">لیتر به میلی‌لیتر</option><option value="c">سانتی‌گراد به فارنهایت</option></select></label></div><div class="result" id="unitResult">نتیجه</div><button style="margin-top:10px" onclick="convert()">تبدیل</button></div>
+<div id="history" class="panel"><div class="history" id="historyList">هنوز محاسبه‌ای ثبت نشده.</div><button onclick="hist=[];showHistory()">پاک کردن تاریخچه</button></div>
+</section><p class="sub" style="text-align:center">حسابینو · محاسبه سریع، ساده و رایگان</p></main>
+<script>
+let expression='',hist=[];const out=document.getElementById('out'),expr=document.getElementById('expr');
+function add(v){expression+=v;expr.textContent=expression;out.textContent=expression||'0'}
+function clearAll(){expression='';expr.textContent='';out.textContent='0'}
+function del(){expression=expression.slice(0,-1);expr.textContent=expression;out.textContent=expression||'0'}
+function calculate(){try{if(!expression.trim())return;let safe=expression.replace(/×/g,'*').replace(/÷/g,'/');if(!/^[0-9+*/().%\s-]+$/.test(safe))throw 0;let val=Function('"use strict";return ('+safe+')')();if(!Number.isFinite(val))throw 0;hist.unshift(expression+' = '+val);expression=String(Number(val.toFixed(10)));expr.textContent=hist[0];out.textContent=expression;showHistory()}catch(e){out.textContent='خطا';}}
+function tab(id,b){document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.tabs button').forEach(x=>x.classList.remove('active'));b.classList.add('active');if(id==='history')showHistory()}
+function discount(){let p=+price.value,d=+percent.value;if(p<0||d<0||d>100)return discountResult.textContent='مقادیر را بررسی کن';discountResult.textContent='قیمت نهایی: '+Math.round(p*(1-d/100)).toLocaleString('fa-IR')+' تومان · مقدار تخفیف: '+Math.round(p*d/100).toLocaleString('fa-IR')+' تومان'}
+function loan(){let a=+loanAmount.value,n=+months.value,r=+rate.value/1200;if(a<=0||n<=0)return loanResult.textContent='مبلغ و تعداد ماه را وارد کن';let pay=r? a*r/(1-Math.pow(1+r,-n)):a/n;loanResult.textContent='قسط تقریبی ماهانه: '+Math.round(pay).toLocaleString('fa-IR')+' تومان'}
+function convert(){let v=+unitValue.value,k=unit.value,ans=k==='km'?v*1000:k==='m'?v*100:k==='kg'?v*1000:k==='l'?v*1000:v*9/5+32;unitResult.textContent='نتیجه: '+ans.toLocaleString('fa-IR')+(k==='c'?' °F':'')}
+function showHistory(){historyList.innerHTML=hist.length?hist.slice(0,15).map(x=>'• '+x).join('<br>'):'هنوز محاسبه‌ای ثبت نشده.'}
+document.addEventListener('keydown',e=>{if(/[0-9.+\-*/()%]/.test(e.key))add(e.key);else if(e.key==='Enter')calculate();else if(e.key==='Backspace')del();else if(e.key==='Escape')clearAll()});
+</script></body></html>
